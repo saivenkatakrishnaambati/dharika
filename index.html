@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EarthTune – The Earth Information Jukebox</title>
+<style>
+:root{color-scheme:dark;--bg:#050b1f;--p:#4cc9f0;--a:#ffb703;--t:#e8f1ff;--c:rgba(255,255,255,.08);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:radial-gradient(circle at 50% 0,#10224d,var(--bg) 60%) fixed;color:var(--t);min-height:100vh;padding-bottom:80px}
+header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(5,11,31,.9);position:sticky;top:env(safe-area-inset-top,0px);z-index:10}
+nav{display:flex;flex-wrap:wrap;gap:6px}
+button,select,input{font:inherit;border-radius:12px;padding:9px 13px;background:var(--c);color:var(--t);cursor:pointer;border:1px solid rgba(255,255,255,.18)}
+button:hover{background:rgba(76,201,240,.3)}nav button.on{background:var(--p);color:#001;font-weight:700}
+input{flex:1;min-width:180px;cursor:text}select option{color:#000}
+main{max-width:980px;margin:auto;padding:18px}.page{display:none}.page.on{display:block;animation:f .4s}@keyframes f{from{opacity:0;transform:translateY(8px)}}
+h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.1}h1 span{color:var(--p)}.lead{font-size:1.08rem;opacity:.88}
+.cards,.newsgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:20px 0}
+.card,.news{background:var(--c);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:16px;cursor:pointer;transition:.2s;color:inherit;text-decoration:none;display:block}
+.card:hover,.news:hover{transform:translateY(-4px);border-color:var(--p)}.card i{font-size:2.3rem;font-style:normal}.news small{color:var(--p)}.news em{color:var(--a)}
+.big{background:var(--a);color:#000;font-weight:700;font-size:1.15rem;padding:13px 24px}
+.globeWrap{position:relative;height:min(70vh,500px);border-radius:20px;overflow:hidden;background:radial-gradient(#0a1a40,#000)}#globe{width:100%;height:100%;cursor:grab;touch-action:none}
+#cloud{position:absolute;right:10px;top:10px;max-width:min(280px,70%);font-size:2.2rem}#cloudText{font-size:.92rem;background:#fff;color:#123;padding:11px 13px;border-radius:18px;box-shadow:0 6px 20px #0006}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0;align-items:center}
+canvas.ch{width:100%;background:rgba(0,0,0,.35);border-radius:16px}.panel{background:var(--c);border-radius:16px;padding:15px;margin:14px 0}
+.chat{height:340px;overflow:auto;background:rgba(0,0,0,.3);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.m{padding:10px 14px;border-radius:14px;max-width:88%}.m.u{align-self:flex-end;background:#1d4ed8}.m.b{background:#14532d}
+#alertBox{position:fixed;inset:0;z-index:50;background:rgba(160,0,0,.9);display:flex;align-items:center;justify-content:center;text-align:center;animation:fl .6s infinite alternate;padding:20px}.hide{display:none!important}.alertin .row{justify-content:center}@keyframes fl{to{background:rgba(60,0,0,.94)}}
+#sub{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:min(440px,calc(100% - 24px));background:rgba(0,0,0,.85);color:#fff;padding:10px 14px;border-radius:12px;font-size:.95rem;z-index:40;border-left:4px solid var(--a)}
+</style></head><body>
+<header>
+  <div style="font-size:1.35rem">🌍🎵 <b>EarthTune</b></div>
+  <nav id="nav">
+    <button data-page="home" class="on">🏠 Home</button><button data-page="explore">🌐 Hear the Earth</button><button data-page="data">📊 Data Songs</button><button data-page="guide">🤖 AI Guide</button><button data-page="news">📰 AI &amp; Earth News</button><button data-page="alerts">🚨 Alerts</button>
+  </nav>
+  <button id="voiceBtn">🔊 Voice: ON</button>
+</header>
+<main>
+<section class="page on" id="home">
+  <h1>Don’t just <span>see</span> our planet.<br>Hear its story.</h1>
+  <p class="lead">EarthTune turns Earth science information into pictures, sounds and simple words, for kids and grandparents alike.</p>
+  <div class="cards">
+    <div class="card" data-go="explore"><i>🌐</i><h3>Hear the Earth</h3><p>Spin a 3D Earth. Touch land, water, ice or clouds and listen!</p></div>
+    <div class="card" data-go="data"><i>📊</i><h3>Data Songs</h3><p>See temperature, CO₂ and sea ice change, then play them as music.</p></div>
+    <div class="card" data-go="guide"><i>🤖</i><h3>AI Guide</h3><p>Ask any question about our planet.</p></div>
+    <div class="card" data-go="news"><i>📰</i><h3>AI &amp; Earth News</h3><p>How AI helps scientists protect our planet.</p></div>
+    <div class="card" data-go="alerts"><i>🚨</i><h3>Earth Alerts</h3><p>Unusual-pattern detection with siren, mute and dismiss.</p></div>
+  </div>
+  <button class="big" data-go="explore">▶ Start the journey</button>
+</section>
+
+<section class="page" id="explore">
+  <h2>🌐 Hear the Earth</h2>
+  <p class="lead">Drag to turn the planet. <b>Click</b> land, ocean, ice or white clouds to hear that part of Earth.</p>
+  <div class="globeWrap"><div id="globe"></div><div id="cloud">☁️<div id="cloudText">Click the Earth to hear it!</div></div></div>
+  <div class="row"><button id="spinBtn">⏸ Stop spinning</button><button id="stopSound">🔇 Stop sound</button>
+    <button data-snd="water">🌊 Water</button><button data-snd="land">🌳 Land</button><button data-snd="ice">🧊 Ice</button><button data-snd="wind">🌬️ Clouds</button></div>
+</section>
+
+<section class="page" id="data">
+  <h2>📊 Data Songs</h2>
+  <p class="lead">Pick a dataset. Higher values give higher notes. Values are rounded sample trends for demonstration.</p>
+  <div class="row" id="dsBtns"></div>
+  <canvas class="ch" id="chart" width="900" height="340"></canvas>
+  <div class="row"><button id="playData">▶ Play as music</button><button id="stopData">■ Stop</button></div>
+  <div class="panel" id="dsInfo"></div>
+</section>
+
+<section class="page" id="guide">
+  <h2>🤖 AI Earth Guide</h2>
+  <div class="chat" id="chat"></div>
+  <div class="row"><input id="q" placeholder="Ask: Why is the ocean salty?" autocomplete="off"><button id="ask">Ask</button></div>
+  <div class="row" id="sugg"></div>
+</section>
+
+<section class="page" id="news">
+  <h2>📰 How AI is helping Earth science</h2>
+  <p class="lead">Ideas from the sources we studied, and how EarthTune uses them.</p>
+  <div class="newsgrid">
+    <a class="news" target="_blank" rel="noopener" href="https://eesa.lbl.gov/research/earth-ai-and-data/"><small>🔬 Berkeley Lab</small><h3>Earth AI &amp; Data</h3><p>Scientists use AI with large Earth datasets to understand climate, water and ecosystems.</p><em>💡 Our AI Guide explains data simply.</em></a>
+    <a class="news" target="_blank" rel="noopener" href="https://planetarycomputer.microsoft.com"><small>🛰️ Microsoft</small><h3>Planetary Computer</h3><p>A platform bringing planet-scale environmental data and tools together for sustainability work.</p><em>💡 Data Songs turn such time series into sound.</em></a>
+    <a class="news" target="_blank" rel="noopener" href="https://www.researchgate.net/publication/392184907_The_Evolution_of_Generative_AI_Trends_and_Applications"><small>📄 Research paper</small><h3>Evolution of Generative AI</h3><p>Reviews the trends and applications of generative AI, including explaining and creating content.</p><em>💡 AI-style explanations and voice for everyone.</em></a>
+    <a class="news" target="_blank" rel="noopener" href="https://blog.google/innovation-and-ai/technology/health/google-earth-ai/"><small>🌐 Google</small><h3>Earth AI for global health</h3><p>Uses Earth data and AI to help communities anticipate risks earlier and act proactively.</p><em>💡 Our Alerts page flags unusual patterns early.</em></a>
+  </div>
+  <div class="panel"><h3>🧠 Our ideas</h3><ul><li>Sonification: hearing data helps blind users and children.</li><li>Anomaly detection using a simple z-score threshold.</li><li>Voice plus subtitles for accessibility.</li><li>Alerts clearly say: unusual pattern, not an official emergency.</li></ul></div>
+</section>
+
+<section class="page" id="alerts">
+  <h2>🚨 Earth Anomaly Monitor</h2>
+  <p class="lead">A live demo stream. When a value jumps far from normal, EarthTune raises an alert.</p>
+  <canvas class="ch" id="live" width="900" height="240"></canvas>
+  <div class="row"><select id="metric"></select><button id="trigger">⚡ Simulate anomaly</button></div>
+  <div class="panel" id="log">Monitoring…</div>
+  <div class="panel"><small>⚠️ Demo data. An alert here means an unusual pattern, not an officially confirmed emergency. Always follow local authorities.</small></div>
+</section>
+</main>
+
+<div id="alertBox" class="hide"><div class="alertin"><h1>🚨 ALERT! ALERT! 🚨</h1><p id="alertMsg"></p><p><small>Unusual data pattern, not an official emergency.</small></p>
+<div class="row"><button id="muteA">🔇 Mute</button><button id="dismissA">✖ Dismiss</button></div></div></div>
+<div id="sub">Subtitles appear here.</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+/* Router */
+function go(p){$$('.page').forEach(e=>e.classList.toggle('on',e.id===p));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.page===p));
+  try{history.replaceState(null,'','#'+p)}catch(e){}window.scrollTo(0,0);stopAll();
+  if(p==='explore')initGlobe();if(p==='data')drawChart();if(p==='alerts')startLive();else clearInterval(liveT);
+  say({home:'Welcome to EarthTune. Choose a page to begin.',explore:'Drag the Earth and click land, water, ice or clouds.',data:'Pick a dataset and play it as music.',guide:'Ask me anything about our planet.',news:'See how AI helps protect Earth.',alerts:'Watching Earth data for unusual patterns.'}[p])}
+$$('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.page));$$('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+/* Voice + subtitles */
+let voiceOn=true,subT;
+function sub(t){const s=$('#sub');s.textContent=t;clearTimeout(subT);subT=setTimeout(()=>s.textContent='Subtitles appear here.',9000)}
+function say(t){sub(t);if(!voiceOn||!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.95;speechSynthesis.speak(u)}
+$('#voiceBtn').onclick=()=>{voiceOn=!voiceOn;$('#voiceBtn').textContent='🔊 Voice: '+(voiceOn?'ON':'OFF');if(!voiceOn&&window.speechSynthesis)speechSynthesis.cancel()};
+/* Audio */
+let AC,master,nodes=[],timers=[],dataTimer;
+function ctx(){if(!AC){AC=new(window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.6;master.connect(AC.destination)}if(AC.state==='suspended')AC.resume();return AC}
+function noise(){const c=ctx(),b=c.createBuffer(1,c.sampleRate*2,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=c.createBufferSource();s.buffer=b;s.loop=true;s.start();nodes.push(s);return s}
+function tone(f,dur=.4,type='sine',vol=.25){const c=ctx(),o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(vol,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+dur);o.connect(g);g.connect(master);o.start();o.stop(c.currentTime+dur)}
+function stopAll(){timers.forEach(clearInterval);timers=[];nodes.forEach(n=>{try{n.stop()}catch(e){}});nodes=[];clearInterval(dataTimer)}
+function filt(type,f,q,vol,lfo){const c=ctx(),n=noise(),fl=c.createBiquadFilter(),g=c.createGain();fl.type=type;fl.frequency.value=f;if(q)fl.Q.value=q;if(lfo){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=lfo[0];lg.gain.value=lfo[1];l.connect(lg);lg.connect(fl.frequency);l.start();nodes.push(l)}g.gain.value=vol;n.connect(fl);fl.connect(g);g.connect(master)}
+const SOUNDS={
+ water(){filt('lowpass',700,0,.5,[.15,400]);timers.push(setInterval(()=>tone(500+Math.random()*700,.15,'sine',.05),400))},
+ land(){filt('bandpass',350,0,.12);timers.push(setInterval(()=>{const b=2200+Math.random()*1500;tone(b,.08,'sine',.12);setTimeout(()=>tone(b*1.2,.08,'sine',.1),110)},1400));tone(110,6,'triangle',.08)},
+ ice(){timers.push(setInterval(()=>tone([1318,1568,1760,2093,2637][Math.floor(Math.random()*5)],1.2,'sine',.12),500));filt('highpass',5000,0,.05)},
+ wind(){filt('bandpass',600,1.5,.5,[.2,300])}};
+const INFO={water:'🌊 Ocean! Water covers about 71% of Earth and stores huge amounts of heat. Warming oceans raise sea level.',land:'🌳 Land! Forests, farms and deserts live here. Plants take in CO₂ and give us oxygen.',ice:'🧊 Ice! Polar ice reflects sunlight and keeps Earth cool. Satellites show Arctic sea ice is shrinking.',wind:'☁️ Clouds and air! Clouds carry water around the planet and shape weather and climate.'};
+function play(k){stopAll();SOUNDS[k]();$('#cloudText').textContent=INFO[k];say(INFO[k].replace(/^\S+\s/,''))}
+$$('[data-snd]').forEach(b=>b.onclick=()=>play(b.dataset.snd));$('#stopSound').onclick=()=>{stopAll();sub('Sound stopped.')};
+/* Procedural Earth texture (no external images needed) */
+const LAND={na:[[-168,66],[-140,70],[-95,72],[-80,70],[-62,58],[-55,48],[-70,42],[-76,35],[-81,25],[-97,26],[-97,19],[-88,16],[-83,9],[-78,8],[-86,14],[-105,20],[-117,32],[-124,40],[-125,50],[-140,60],[-165,60]],
+ sa:[[-78,8],[-62,10],[-50,0],[-35,-6],[-40,-22],[-48,-28],[-58,-38],[-66,-46],[-68,-55],[-74,-50],[-72,-30],[-70,-18],[-81,-6],[-80,2]],
+ gl:[[-55,60],[-45,60],[-20,70],[-20,82],[-60,82],[-70,76]],
+ eu:[[-10,36],[-9,43],[0,50],[10,55],[25,70],[60,70],[100,78],[140,72],[170,68],[180,65],[160,58],[140,50],[130,40],[122,30],[110,20],[105,10],[100,2],[95,15],[80,8],[72,20],[58,25],[48,30],[35,36],[28,40],[20,38],[10,44],[0,38]],
+ af:[[-17,21],[-10,35],[10,37],[32,31],[43,12],[51,11],[40,-5],[40,-15],[33,-27],[20,-35],[12,-17],[9,0],[-8,5],[-17,14]],
+ ar:[[35,30],[48,30],[58,24],[52,15],[43,13]],
+ au:[[114,-22],[122,-18],[136,-12],[142,-11],[153,-27],[146,-39],[135,-34],[115,-34]]};
+function earthCanvas(){const W=1024,H=512,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const X=lo=>(lo+180)/360*W,Y=la=>(90-la)/180*H;let g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#1b4f9c');g.addColorStop(.5,'#0d3f8f');g.addColorStop(1,'#1b4f9c');x.fillStyle=g;x.fillRect(0,0,W,H);
+  for(const k in LAND){x.beginPath();LAND[k].forEach((p,i)=>i?x.lineTo(X(p[0]),Y(p[1])):x.moveTo(X(p[0]),Y(p[1])));x.closePath();x.fillStyle=(k==='af'||k==='ar'||k==='au')?'#b59a5a':'#3f8f4a';x.fill();x.lineWidth=2;x.strokeStyle='#2c6b36';x.stroke()}
+  x.fillStyle='#f4f8ff';x.fillRect(0,0,W,Y(72));x.fillRect(0,Y(-68),W,H);
+  let s=7;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;x.fillStyle='rgba(255,255,255,.9)';for(let i=0;i<26;i++){const cx=rnd()*W,cy=(.2+rnd()*.6)*H;for(let j=0;j<5;j++){x.beginPath();x.ellipse(cx+rnd()*50-25,cy+rnd()*14-7,22+rnd()*26,8+rnd()*9,0,0,7);x.fill()}}
+  return c}
+/* Globe */
+let G={};
+function initGlobe(){if(G.ok){G.resize();return}G.ok=true;
+  const el=$('#globe'),W=()=>el.clientWidth,H=()=>el.clientHeight;
+  if(!window.THREE){el.innerHTML='<p style="padding:20px">3D library could not load. Use the sound buttons below.</p>';return}
+  const r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(Math.min(devicePixelRatio,2));r.setSize(W(),H());el.appendChild(r.domElement);
+  const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(45,W()/H(),.1,100);cam.position.z=3;
+  sc.add(new THREE.AmbientLight(0xffffff,.95));const sun=new THREE.DirectionalLight(0xffffff,.5);sun.position.set(5,2,5);sc.add(sun);
+  const cv=earthCanvas(),cx=cv.getContext('2d'),tex=new THREE.CanvasTexture(cv);
+  const globe=new THREE.Mesh(new THREE.SphereGeometry(1,64,64),new THREE.MeshPhongMaterial({map:tex,shininess:8}));sc.add(globe);
+  sc.add(new THREE.Mesh(new THREE.SphereGeometry(1.06,48,48),new THREE.MeshBasicMaterial({color:0x4cc9f0,transparent:true,opacity:.13,side:THREE.BackSide})));
+  G.spin=true;G.resize=()=>{r.setSize(W(),H());cam.aspect=W()/H();cam.updateProjectionMatrix()};addEventListener('resize',G.resize);
+  const d=r.domElement;let down=null,moved=0;
+  d.onpointerdown=e=>{down={x:e.clientX,y:e.clientY};moved=0;d.style.cursor='grabbing'};
+  addEventListener('pointermove',e=>{if(!down)return;const dx=e.clientX-down.x,dy=e.clientY-down.y;moved+=Math.abs(dx)+Math.abs(dy);globe.rotation.y+=dx*.008;globe.rotation.x=Math.max(-1,Math.min(1,globe.rotation.x+dy*.006));down={x:e.clientX,y:e.clientY}});
+  const ray=new THREE.Raycaster();
+  addEventListener('pointerup',e=>{d.style.cursor='grab';if(down&&moved<6&&e.target===d){const b=d.getBoundingClientRect();ray.setFromCamera(new THREE.Vector2(((e.clientX-b.left)/b.width)*2-1,-((e.clientY-b.top)/b.height)*2+1),cam);
+    const h=ray.intersectObject(globe)[0];if(h&&h.uv){const u=h.uv.x,v=h.uv.y,[R,Gc,B]=cx.getImageData(Math.floor(u*1023),Math.floor((1-v)*511),1,1).data;
+      play(Math.abs((v-.5)*180)>68?'ice':(R>190&&Gc>190&&B>190)?'wind':(B>R+10&&B>Gc)?'water':'land')}}down=null});
+  (function loop(){requestAnimationFrame(loop);if(G.spin&&!down)globe.rotation.y+=.0025;r.render(sc,cam)})()}
+$('#spinBtn').onclick=()=>{G.spin=!G.spin;$('#spinBtn').textContent=G.spin?'⏸ Stop spinning':'▶ Spin Earth'};
+/* Data songs */
+const DS={temp:{n:'🌡️ Global temperature change',u:'°C vs 1951–80 average',y0:1960,step:1,v:[-.02,-.03,.03,.06,.03,-.07,-.04,.05,.02,.08,.03,.06,.06,.17,.26,.18,.16,.12,.1,.23,.33,.45,.4,.4,.47,.5,.58,.64,.7,.82,.9,.99,1.02,1.01,.98,1.17],info:'Earth is getting warmer. Warmer air melts ice and changes weather.'},
+ co2:{n:'💨 Carbon dioxide (CO₂)',u:'ppm',y0:1960,step:2,v:[317,320,324,328,332,338,343,349,355,361,369,377,386,396,405,414,420,424],info:'CO₂ traps heat like a blanket. It has grown steadily since 1960.'},
+ ice:{n:'🧊 Arctic sea ice (September)',u:'million km²',y0:1980,step:3,v:[7.7,7.5,7.1,7.4,6.9,6.5,6.1,6.0,5.4,4.7,4.6,4.3,4.2,3.9,3.4,3.6],info:'Summer Arctic ice is shrinking. Less ice means less sunlight reflected back to space.'}};
+let cur='temp',idx=-1;
+$('#dsBtns').innerHTML=Object.keys(DS).map(k=>`<button data-k="${k}">${DS[k].n}</button>`).join('');
+$$('#dsBtns button').forEach(b=>b.onclick=()=>{cur=b.dataset.k;idx=-1;stopAll();drawChart();say(DS[cur].info)});
+function drawChart(){const d=DS[cur],c=$('#chart'),x=c.getContext('2d'),W=c.width,H=c.height,v=d.v,mn=Math.min(...v),mx=Math.max(...v),px=i=>40+i*(W-70)/(v.length-1),py=y=>H-30-(y-mn)/(mx-mn)*(H-70);
+  x.clearRect(0,0,W,H);x.fillStyle='#e8f1ff';x.font='16px sans-serif';x.fillText(d.n+' ('+d.u+')',40,22);x.strokeStyle='#4cc9f0';x.lineWidth=3;x.beginPath();v.forEach((y,i)=>i?x.lineTo(px(i),py(y)):x.moveTo(px(i),py(y)));x.stroke();
+  x.fillStyle='#ffb703';v.forEach((y,i)=>{x.beginPath();x.arc(px(i),py(y),i===idx?9:3.5,0,7);x.fill()});x.fillStyle='#9ab';x.fillText(d.y0,30,H-8);x.fillText(d.y0+(v.length-1)*d.step,W-70,H-8);
+  $('#dsInfo').innerHTML=`<b>${d.n}</b><br>${d.info}<br><small>Rounded sample values for demonstration.</small>`}
+$('#playData').onclick=()=>{stopAll();idx=-1;const d=DS[cur],mn=Math.min(...d.v),mx=Math.max(...d.v);say('Playing '+d.n+'. Higher notes mean higher values.');
+  dataTimer=setInterval(()=>{idx++;if(idx>=d.v.length){clearInterval(dataTimer);idx=-1;drawChart();return}tone(220+(d.v[idx]-mn)/(mx-mn)*660,.35,'triangle',.3);drawChart()},350)};
+$('#stopData').onclick=()=>{stopAll();idx=-1;drawChart()};
+/* AI Guide (built-in knowledge base) */
+const KB=[[/climate change|global warming/,'Climate change means Earth’s long-term weather is shifting, mostly warming. Burning coal, oil and gas adds CO₂ that traps heat. Satellites measure it every day.'],
+[/ocean|sea\b|water|salty/,'Oceans cover about 71% of Earth. They are salty because rivers wash tiny bits of minerals from rocks into the sea over millions of years. Oceans also absorb lots of heat and CO₂.'],
+[/ice|arctic|glacier|polar/,'Ice at the poles reflects sunlight. When it melts, dark water absorbs more heat, so melting speeds up. Melting land ice also raises sea level.'],
+[/co2|carbon|greenhouse/,'Greenhouse gases like CO₂ and methane act like a blanket around Earth. A little is good, but too much makes the planet too warm.'],
+[/cloud|weather|rain/,'Clouds are tiny water drops or ice crystals. They cool Earth by reflecting sunlight and warm it by trapping heat.'],
+[/night|light|city/,'Night lights show where people live. Satellites see cities glow, which helps study growth, energy use and power outages.'],
+[/forest|tree|plant|land|desert/,'Forests are like Earth’s lungs: trees take in CO₂ and release oxygen. Satellites watch forests grow or disappear.'],
+[/earthquake|volcano/,'Earthquakes and volcanoes happen where giant plates of Earth’s crust move. Satellites can measure ground movement of just millimetres.'],
+[/\bai\b|artificial|machine/,'AI helps scientists find patterns in huge satellite datasets, spot risks like floods or heat, and explain data in simple words. See the AI & Earth News page!'],
+[/nasa|satellite/,'NASA satellites watch Earth day and night, measuring temperature, ice, oceans, air and plants, and share much of the data free with everyone.'],
+[/sonif|sound|hear/,'Sonification turns numbers into sound. Higher value means higher pitch. It helps everyone, including people who cannot see charts, notice changes.'],
+[/sea level|flood/,'Sea level rises because ocean water expands when warm and ice on land melts into the sea. Coastal cities feel it first.'],
+[/hello|\bhi\b|hey/,'Hello, Earth explorer! Ask me about oceans, ice, clouds, CO₂, climate or NASA.']];
+$('#sugg').innerHTML=['What is climate change?','Why is the ocean salty?','How does AI help Earth?','Why does ice matter?'].map(s=>`<button>${s}</button>`).join('');
+$$('#sugg button').forEach(b=>b.onclick=()=>{$('#q').value=b.textContent;ask()});
+function msg(t,c){const m=document.createElement('div');m.className='m '+c;m.textContent=t;$('#chat').appendChild(m);$('#chat').scrollTop=1e9}
+msg('Hi! I am your EarthTune guide 🌍 Ask me anything about our planet.','b');
+function ask(){const q=$('#q').value.trim();if(!q)return;$('#q').value='';msg(q,'u');const h=KB.find(k=>k[0].test(q.toLowerCase())),a=h?h[1]:'Great question! I know about oceans, ice, clouds, CO₂, forests, climate, NASA and AI. Try asking about one of those.';msg(a,'b');say(a)}
+$('#ask').onclick=ask;$('#q').onkeydown=e=>e.key==='Enter'&&ask();
+/* Anomaly monitor + alert */
+const MET={'🌡️ Surface temperature':[15,.4,'°C'],'🔥 Fire hotspot index':[20,3,''],'🌊 Sea level height':[0,.5,'cm'],'💨 Air pollution (PM2.5)':[25,4,'µg/m³']};
+$('#metric').innerHTML=Object.keys(MET).map(k=>`<option>${k}</option>`).join('');
+let live=[],liveT,sirenT,muted=false;
+function startLive(){clearInterval(liveT);live=[];liveT=setInterval(()=>{const[m,s]=MET[$('#metric').value];push(m+(Math.random()-.5)*s*1.6)},700)}
+$('#metric').onchange=()=>{live=[]};
+function push(v){const[m,s,u]=MET[$('#metric').value];live.push(v);if(live.length>40)live.shift();
+  const base=live.slice(0,-1),mean=base.reduce((a,b)=>a+b,0)/(base.length||1),sd=Math.sqrt(base.reduce((a,b)=>a+(b-mean)**2,0)/(base.length||1))||s,z=(v-mean)/sd;drawLive(m,s);
+  if(base.length>8&&Math.abs(z)>3){$('#log').textContent=`⚠️ ${new Date().toLocaleTimeString()} – ${$('#metric').value}: ${v.toFixed(1)} ${u} (z-score ${z.toFixed(1)}, threshold 3)`;showAlert(`Unusual ${$('#metric').value} detected: ${v.toFixed(1)} ${u}`)}}
+function drawLive(m,s){const c=$('#live'),x=c.getContext('2d'),W=c.width,H=c.height;x.clearRect(0,0,W,H);x.strokeStyle='#4cc9f0';x.lineWidth=2;x.beginPath();live.forEach((y,i)=>{const X=i*W/39,Y=H/2-(y-m)/(s*6)*H;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke();x.fillStyle='#9ab';x.font='14px sans-serif';x.fillText('Normal range ≈ '+(m-s).toFixed(1)+' to '+(m+s).toFixed(1),10,16)}
+$('#trigger').onclick=()=>{const[m,s]=MET[$('#metric').value];if(live.length<10)for(let i=0;i<10;i++)live.push(m+(Math.random()-.5)*s);push(m+s*7)};
+function showAlert(t){if(!$('#alertBox').classList.contains('hide'))return;$('#alertMsg').textContent=t;$('#alertBox').classList.remove('hide');muted=false;$('#muteA').textContent='🔇 Mute';
+  const msgT='Alert! Alert! '+t+'. This is an unusual data pattern, not an official emergency.';sub(msgT);if(voiceOn&&window.speechSynthesis){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(msgT))}
+  let hi=false;clearInterval(sirenT);sirenT=setInterval(()=>{if(!muted){hi=!hi;tone(hi?880:620,.45,'sawtooth',.18)}},500)}
+function closeAlert(){clearInterval(sirenT);$('#alertBox').classList.add('hide');if(window.speechSynthesis)speechSynthesis.cancel()}
+$('#muteA').onclick=()=>{muted=true;if(window.speechSynthesis)speechSynthesis.cancel();$('#muteA').textContent='🔇 Muted'};$('#dismissA').onclick=closeAlert;
+go((location.hash||'#home').slice(1).replace(/[^a-z]/g,'')||'home');
+</script></body></html>
